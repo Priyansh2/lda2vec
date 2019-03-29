@@ -3,6 +3,7 @@
 
 # This simple example loads the newsgroups data from sklearn
 # and train an LDA-like model on it
+from __future__ import print_function
 import os.path
 import pickle
 import time
@@ -19,7 +20,7 @@ from lda2vec_model import LDA2Vec
 
 gpu_id = int(os.getenv('CUDA_GPU', 0))
 cuda.get_device(gpu_id).use()
-print "Using GPU " + str(gpu_id)
+print("Using GPU " + str(gpu_id))
 
 # You must run preprocess.py before this data becomes available
 vocab = pickle.load(open('../data/vocab', 'r'))
@@ -69,7 +70,7 @@ model = LDA2Vec(n_stories=n_stories, n_story_topics=n_story_topics,
                 n_units=n_units, n_vocab=n_vocab, counts=term_frequency,
                 n_samples=15)
 if os.path.exists('lda2vec.hdf5'):
-    print "Reloading from saved"
+    print("Reloading from saved")
     serializers.load_hdf5("lda2vec.hdf5", model)
 model.to_gpu()
 optimizer = O.Adam()
@@ -114,6 +115,6 @@ for epoch in range(5000):
         rate = batchsize / dt
         logs = dict(loss=float(l), epoch=epoch, j=j,
                     prior=float(prior.data), rate=rate)
-        print msg.format(**logs)
+        print(msg.format(**logs))
         j += 1
     serializers.save_hdf5("lda2vec.hdf5", model)
