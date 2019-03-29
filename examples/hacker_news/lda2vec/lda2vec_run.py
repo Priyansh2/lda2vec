@@ -30,8 +30,8 @@ flattened = data['flattened']
 story_id = data['story_id']
 author_id = data['author_id']
 time_id = data['time_id']
-ranking = data['ranking'].astype('float32')
-score = data['score'].astype('float32')
+ranking = data['ranking'].astype('float64')
+score = data['score'].astype('float64')
 
 
 # Model Parameters
@@ -52,17 +52,17 @@ words = corpus.word_list(vocab)[:n_vocab]
 
 # How many tokens are in each story
 sty_idx, lengths = np.unique(story_id, return_counts=True)
-sty_len = np.zeros(sty_idx.max() + 1, dtype='int32')
+sty_len = np.zeros(sty_idx.max() + 1, dtype='int64')
 sty_len[sty_idx] = lengths
 
 # How many tokens are in each author
 aut_idx, lengths = np.unique(author_id, return_counts=True)
-aut_len = np.zeros(aut_idx.max() + 1, dtype='int32')
+aut_len = np.zeros(aut_idx.max() + 1, dtype='int64')
 aut_len[aut_idx] = lengths
 
 # Count all token frequencies
 tok_idx, freq = np.unique(flattened, return_counts=True)
-term_frequency = np.zeros(n_vocab, dtype='int32')
+term_frequency = np.zeros(n_vocab, dtype='int64')
 term_frequency[tok_idx] = freq
 
 model = LDA2Vec(n_stories=n_stories, n_story_topics=n_story_topics,

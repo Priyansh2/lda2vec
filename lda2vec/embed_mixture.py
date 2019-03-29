@@ -67,7 +67,7 @@ class EmbedMixture(chainer.Chain):
         self.n_topics = n_topics
         self.n_dim = n_dim
         self.dropout_ratio = dropout_ratio
-        factors = _orthogonal_matrix((n_topics, n_dim)).astype('float32')
+        factors = _orthogonal_matrix((n_topics, n_dim)).astype('float64')
         factors /= np.sqrt(n_topics + n_dim)
         super(EmbedMixture, self).__init__(
             weights=L.EmbedID(n_documents, n_topics),
@@ -110,7 +110,7 @@ class EmbedMixture(chainer.Chain):
             size = w.data.shape
             mask = self.xp.random.random_integers(0, 1, size=size)
             y = (F.softmax(w * self.temperature) *
-                 Variable(mask.astype('float32')))
+                 Variable(mask.astype('float64')))
             norm, y = F.broadcast(F.expand_dims(F.sum(y, axis=1), 1), y)
             return y / (norm + 1e-7)
         else:

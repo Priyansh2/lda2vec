@@ -1,4 +1,6 @@
-from spacy.en import English
+import spacy
+#from spacy.en import English
+from spacy.lang.en import English
 from spacy.attrs import LOWER, LIKE_URL, LIKE_EMAIL
 
 import numpy as np
@@ -65,8 +67,10 @@ def tokenize(texts, max_length, skip=-2, attr=LOWER, merge=False, nlp=None,
     -2
     """
     if nlp is None:
-        nlp = English()
-    data = np.zeros((len(texts), max_length), dtype='int32')
+        #nlp = English()
+        nlp = spacy.load('en')
+    #data = np.zeros((len(texts), max_length), dtype='int32')
+    data = np.zeros((len(texts), max_length), dtype='int64')   
     data[:] = skip
     bad_deps = ('amod', 'compound')
     for row, doc in enumerate(nlp.pipe(texts, **kwargs)):
@@ -86,9 +90,11 @@ def tokenize(texts, max_length, skip=-2, attr=LOWER, merge=False, nlp=None,
                 if len(ent) > 1:
                 # Merge them into single tokens
                     ent.merge(ent.root.tag_, ent.text, ent.label_)
-        dat = doc.to_array([attr, LIKE_EMAIL, LIKE_URL]).astype('int32')
+        #dat = doc.to_array([attr, LIKE_EMAIL, LIKE_URL]).astype('int32')
+        dat = doc.to_array([attr, LIKE_EMAIL, LIKE_URL]).astype('int64') 
         if len(dat) > 0:
-            dat = dat.astype('int32')
+            #dat = dat.astype('int32')
+            dat = dat.astype('int64')
             msg = "Negative indices reserved for special tokens"
             assert dat.min() >= 0, msg
             # Replace email and URL tokens

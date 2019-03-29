@@ -58,7 +58,7 @@ class LDA2Vec(Chain):
             doc_is_same = doc_at_target == doc_at_pivot
             rand = np.random.uniform(0, 1, doc_is_same.shape[0])
             mask = (rand > self.word_dropout_ratio).astype('bool')
-            weight = np.logical_and(doc_is_same, mask).astype('int32')
+            weight = np.logical_and(doc_is_same, mask).astype('int64')
             # If weight is 1.0 then targetidx
             # If weight is 0.0 then -1
             targetidx = targetidx * weight + -1 * (1 - weight)

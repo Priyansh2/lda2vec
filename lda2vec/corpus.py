@@ -100,12 +100,13 @@ class Corpus():
         loose_counts = [i for i in loose_counts if i[0] not in self.specials.values()]
         keys = np.array(loose_counts)[:, 0]
         counts = np.array(loose_counts)[:, 1]
-        order = np.argsort(counts)[::-1].astype('int32')
+        order = np.argsort(counts)[::-1].astype('int64')
         keys, counts = keys[order], counts[order]
         # Add in the specials as a prefix to the other keys
-        specials = np.sort(self.specials.values())
+        #specials = np.sort(self.specials.values())
+        specials = np.sort(np.array(list(self.specials.values())))
         keys = np.concatenate((specials, keys))
-        empty = np.zeros(len(specials), dtype='int32')
+        empty = np.zeros(len(specials), dtype='int64')
         counts = np.concatenate((empty, counts))
         n_keys = keys.shape[0]
         assert counts.min() >= 0
@@ -155,7 +156,7 @@ class Corpus():
         # Return the loose keys and counts in descending count order
         # so that the counts arrays is already in compact order
         self.keys_loose, self.keys_counts, n_keys = self._loose_keys_ordered()
-        self.keys_compact = np.arange(n_keys).astype('int32')
+        self.keys_compact = np.arange(n_keys).astype('int64')
         self.loose_to_compact = {l: c for l, c in
                                  zip(self.keys_loose, self.keys_compact)}
         self.compact_to_loose = {c: l for l, c in
@@ -456,7 +457,7 @@ class Corpus():
         --------
 
         >>> vocab = {0: 'But', 1: 'the', 2: 'night', 3: 'was', 4: 'warm'}
-        >>> word_indices = np.zeros(50).astype('int32')
+        >>> word_indices = np.zeros(50).astype('int64')
         >>> word_indices[:25] = 0  # 'But' shows 25 times
         >>> word_indices[25:35] = 1  # 'the' is in 10 times
         >>> word_indices[40:46] = 2  # 'night' is in 6 times
@@ -511,7 +512,7 @@ class Corpus():
         --------
         >>> import numpy.linalg as nl
         >>> vocab = {19: 'shuttle', 5: 'astronomy', 7: 'cold', 3: 'hot'}
-        >>> word_indices = np.zeros(50).astype('int32')
+        >>> word_indices = np.zeros(50).astype('int64')
         >>> word_indices[:25] = 19  # 'Shuttle' shows 25 times
         >>> word_indices[25:35] = 5  # 'astronomy' is in 10 times
         >>> word_indices[40:46] = 7  # 'cold' is in 6 times
@@ -550,7 +551,7 @@ class Corpus():
         keys = [s.encode('ascii', 'ignore') for s in keys_raw]
         lens = [len(s) for s in model.vocab.keys()]
         choices = np.array(keys, dtype='S')
-        lengths = np.array(lens, dtype='int32')
+        lengths = np.array(lens, dtype='int64')
         s, f = 0, 0
 
         def rep0(w): return w
@@ -602,7 +603,7 @@ class Corpus():
 
         >>> import numpy.linalg as nl
         >>> vocab = {19: 'shuttle', 5: 'astronomy', 7: 'cold', 3: 'hot'}
-        >>> word_indices = np.zeros(50).astype('int32')
+        >>> word_indices = np.zeros(50).astype('int64')
         >>> word_indices[:25] = 19  # 'Shuttle' shows 25 times
         >>> word_indices[25:35] = 5  # 'astronomy' is in 10 times
         >>> word_indices[40:46] = 7  # 'cold' is in 6 times

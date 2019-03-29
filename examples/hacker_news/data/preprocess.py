@@ -32,19 +32,20 @@ if not os.path.exists(fn):
 features = []
 # Convert to unicode (spaCy only works with unicode)
 features = pd.read_csv(fn, encoding='utf8', nrows=nrows)
-# Convert all integer arrays to int32
+# Convert all integer arrays to int64
 for col, dtype in zip(features.columns, features.dtypes):
     if dtype is np.dtype('int64'):
-        features[col] = features[col].astype('int32')
+        features[col] = features[col].astype('int64')
 
 # Tokenize the texts
 # If this fails it's likely spacy. Install a recent spacy version.
 # Only the most recent versions have tokenization of noun phrases
-# I'm using SHA dfd1a1d3a24b4ef5904975268c1bbb13ae1a32ff
+# I'm using SHA dfd1a1d3a24b4ef5904975268c1bbb13ae1a64ff
 # Also try running python -m spacy.en.download all --force
 texts = features.pop('comment_text').values
 tokens, vocab = preprocess.tokenize(texts, max_length, n_threads=4,
-                                    merge=True)
+                                    merge=True) ## if error due to this line
+# then try setting 'merge = False'
 del texts
 
 # Make a ranked list of rare vs frequent words
@@ -78,7 +79,7 @@ story_id = pd.Categorical(features['story_id']).codes
 # Chop timestamps into days
 story_time = pd.to_datetime(features['story_time'], unit='s')
 days_since = (story_time - story_time.min()) / pd.Timedelta('1 day')
-time_id = days_since.astype('int32')
+time_id = days_since.astype('int64')
 features['story_id_codes'] = story_id
 features['author_id_codes'] = story_id
 features['time_id_codes'] = time_id

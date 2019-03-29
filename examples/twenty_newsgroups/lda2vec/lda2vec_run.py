@@ -57,11 +57,11 @@ n_units = int(os.getenv('n_units', 300))
 words = corpus.word_list(vocab)[:n_vocab]
 # How many tokens are in each document
 doc_idx, lengths = np.unique(doc_ids, return_counts=True)
-doc_lengths = np.zeros(doc_ids.max() + 1, dtype='int32')
+doc_lengths = np.zeros(doc_ids.max() + 1, dtype='int64')
 doc_lengths[doc_idx] = lengths
 # Count all token frequencies
 tok_idx, freq = np.unique(flattened, return_counts=True)
-term_frequency = np.zeros(n_vocab, dtype='int32')
+term_frequency = np.zeros(n_vocab, dtype='int64')
 term_frequency[tok_idx] = freq
 
 for key in sorted(locals().keys()):

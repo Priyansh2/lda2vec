@@ -29,12 +29,12 @@ class NegativeSamplingFunction(function.Function):
         x_type, t_type, w_type = in_types
 
         type_check.expect(
-            x_type.dtype == numpy.float32,
+            x_type.dtype == numpy.float64,
             x_type.ndim == 2,
-            t_type.dtype == numpy.int32,
+            t_type.dtype == numpy.int64,
             t_type.ndim == 1,
             x_type.shape[0] == t_type.shape[0],
-            w_type.dtype == numpy.float32,
+            w_type.dtype == numpy.float64,
             w_type.ndim == 2,
         )
 
@@ -43,14 +43,14 @@ class NegativeSamplingFunction(function.Function):
         self.ignore_mask = (t != self.ignore_label)
         self._make_samples(t)
 
-        loss = numpy.float32(0.0)
+        loss = numpy.float64(0.0)
         for i, (ix, k) in enumerate(six.moves.zip(x[self.ignore_mask],
                                     self.samples[self.ignore_mask])):
             w = W[k]
             f = w.dot(ix)
             f[0] *= -1  # positive sample
             loss += numpy.sum(numpy.logaddexp(f, 0))
-        return numpy.array(loss, numpy.float32),
+        return numpy.array(loss, numpy.float64),
 
     def forward_gpu(self, inputs):
         x, t, W = inputs
@@ -59,7 +59,7 @@ class NegativeSamplingFunction(function.Function):
         self._make_samples(t)
 
         self.wx = cuda.elementwise(
-            'raw T W, raw T x, bool mask, S k, int32 c, int32 m', 'T wx',
+            'raw T W, raw T x, bool mask, S k, int64 c, int64 m', 'T wx',
             '''
             T f = 0;
             if (mask == 1){
@@ -76,7 +76,7 @@ class NegativeSamplingFunction(function.Function):
               self.sample_size + 1)
 
         y = cuda.elementwise(
-            'T wx, int32 c, int32 m', 'T y',
+            'T wx, int64 c, int64 m', 'T y',
             '''
             T f = wx;
             if (i % m == 0) {
@@ -93,7 +93,7 @@ class NegativeSamplingFunction(function.Function):
             'negative_sampling_forward'
         )(self.wx, n_in, self.sample_size + 1)
         # TODO(okuta): merge elementwise
-        loss = cuda.cupy.sum(y * self.ignore_mask[:, None].astype('float32'))
+        loss = cuda.cupy.sum(y * self.ignore_mask[:, None].astype('float64'))
         return loss,
 
     def backward_cpu(self, inputs, grads):
@@ -124,7 +124,7 @@ class NegativeSamplingFunction(function.Function):
 
         n_in = x.shape[1]
         g = cuda.elementwise(
-            'T wx, raw T gloss, int32 m', 'T g',
+            'T wx, raw T gloss, int64 m', 'T g',
             '''
             T y;
             if (i % m == 0) {
@@ -139,7 +139,7 @@ class NegativeSamplingFunction(function.Function):
         )(self.wx, gloss, self.sample_size + 1)
         gx = cupy.zeros_like(x)
         cuda.elementwise(
-            'raw T g, raw T W, bool mask, raw S k, int32 c, int32 m', 'T gx',
+            'raw T g, raw T W, bool mask, raw S k, int64 c, int64 m', 'T gx',
             '''
             int d = i / c;
             T w = 0;
@@ -155,7 +155,7 @@ class NegativeSamplingFunction(function.Function):
               self.sample_size + 1, gx)
         gW = cupy.zeros_like(W)
         cuda.elementwise(
-            'T g, raw T x, S k, bool mask, int32 c, int32 m',
+            'T g, raw T x, S k, bool mask, int64 c, int64 m',
             'raw T gW',
             '''
             T gi = g;

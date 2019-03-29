@@ -64,10 +64,10 @@ def fake_data(n_docs, n_words, n_sent_length, n_topics):
     # Multiply log ratios and softmax to get prob of word in doc
     doc_to_wrds = softmax(np.dot(doc_topics, wrd_topics))
     # Now sample from doc_to_wrd to get realizations
-    indices = np.arange(n_words).astype('int32')
+    indices = np.arange(n_words).astype('int64')
     sentences = []
     for doc_to_wrd in doc_to_wrds:
         words = sample(indices, doc_to_wrd, n_sent_length)
         sentences.append(words)
     sentences = np.array(sentences)
-    return sentences.astype('int32')
+    return sentences.astype('int64')

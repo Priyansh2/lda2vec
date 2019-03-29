@@ -62,7 +62,7 @@ class LDA2Vec(Chain):
             rand = np.random.uniform(0, 1, sty_is_same.shape[0])
             mask = (rand > self.word_dropout_ratio).astype('bool')
             sty_and_aut_are_same = np.logical_and(sty_is_same, aut_is_same)
-            weight = np.logical_and(sty_and_aut_are_same, mask).astype('int32')
+            weight = np.logical_and(sty_and_aut_are_same, mask).astype('int64')
             # If weight is 1.0 then targetidx
             # If weight is 0.0 then -1
             targetidx = targetidx * weight + -1 * (1 - weight)

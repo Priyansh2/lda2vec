@@ -6,10 +6,10 @@ import numpy as np
 def move(xp, *args):
     for arg in args:
         if 'float' in str(arg.dtype):
-            yield Variable(xp.asarray(arg, dtype='float32'))
+            yield Variable(xp.asarray(arg, dtype='float64'))
         else:
             assert 'int' in str(arg.dtype)
-            yield Variable(xp.asarray(arg, dtype='int32'))
+            yield Variable(xp.asarray(arg, dtype='int64'))
 
 
 def most_similar(embeddings, word_index):

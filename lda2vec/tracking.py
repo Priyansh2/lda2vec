@@ -52,7 +52,7 @@ class Tracking:
         slope = self.slope
         if self.calls % 100 == 0:
             lr = LinearRegression()
-            x = np.arange(len(data)).astype('float32')
+            x = np.arange(len(data)).astype('float64')
             lr.fit(x[:, None], np.array(data))
             self.slope = lr.coef_[0]
         self.calls += 1

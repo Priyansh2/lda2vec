@@ -26,7 +26,7 @@ def clean(line):
 # Preprocess data
 max_length = 10000   # Limit of 10k words per document
 # Convert to unicode (spaCy only works with unicode)
-texts = [unicode(clean(d)) for d in texts]
+texts = [str(clean(d)) for d in texts]
 tokens, vocab = preprocess.tokenize(texts, max_length, merge=False,
                                     n_threads=4)
 corpus = Corpus()
