@@ -81,11 +81,11 @@ def tokenize(texts, max_length, skip=-2, attr=LOWER, merge=False, nlp=None,
                     # Merge the tokens, e.g. good_ideas
                     phrase.merge(phrase.root.tag_, phrase.text,
                                  phrase.root.ent_type_)
-                # Iterate over named entities
-                for ent in doc.ents:
-                    if len(ent) > 1:
-                        # Merge them into single tokens
-                        ent.merge(ent.root.tag_, ent.text, ent.label_)
+            # Iterate over named entities
+            for ent in doc.ents:
+                if len(ent) > 1:
+                # Merge them into single tokens
+                    ent.merge(ent.root.tag_, ent.text, ent.label_)
         dat = doc.to_array([attr, LIKE_EMAIL, LIKE_URL]).astype('int32')
         if len(dat) > 0:
             dat = dat.astype('int32')
